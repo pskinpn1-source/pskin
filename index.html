@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>新式-行銷合作同意書｜A4 v15 (等比例置中，不拉伸)</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<style>
+  :root { --a4-w: 210mm; --a4-h: 297mm; --pad: 14mm; }
+  html, body { background:#e5e7eb; margin:0; }
+  body { font-family: "Noto Sans TC", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang TC", "Microsoft JhengHei", sans-serif; }
+  .sheet { width: var(--a4-w); min-height: var(--a4-h); margin: 12px auto 72px; background:#fff; color:#111827; box-shadow:0 4px 20px rgba(0,0,0,.08); }
+  .inner { padding: var(--pad); box-sizing:border-box; }
+  h1 { text-align:center; font-size:18pt; margin:0 0 8mm; letter-spacing:.5px; }
+  .grid-2 { display:grid; grid-template-columns: 1fr 1fr; column-gap:8mm; }
+  label { font-weight:600; font-size:11pt; display:block; margin:0 0 2mm; }
+  input[type=text] { width:100%; border:1px solid #9ca3af; border-radius:6px; padding:10px 12px; font-size:11pt; line-height:1.6; -webkit-appearance:none; }
+  .row { margin: 0 0 6mm; }
+  .section { border:1px solid #e5e7eb; border-radius:6px; padding:6mm; margin: 0 0 6mm; }
+  .muted { color:#4b5563; font-size:10.5pt; line-height:1.7; }
+  ol { margin: 2mm 0 0 5mm; }
+  li { margin: 1mm 0; }
+  .agree-line { display:flex; align-items:flex-start; gap:4mm; font-size:11pt; margin: 4mm 0; }
+  .agree-line input { transform: translateY(2px); }
+  .sig-box { border:1px dashed #6b7280; border-radius:6px; padding:3mm; margin-top:6mm; }
+  #signature { width:100%; height:60mm; background:#fff; border-radius:4px; display:block; touch-action:none; }
+  .footer-note { font-size:9.5pt; color:#6b7280; margin-top:2mm; }
+  .btn { border:1px solid #cbd5e1; background:#111827; color:#fff; padding:9px 14px; font-size:12pt; border-radius:6px; cursor:pointer; }
+  .btn.secondary { background:#fff; color:#111827; }
+  .fixedbar { position:fixed; left:0; right:0; bottom:0; background:#111827; padding:10px 14px; display:flex; justify-content:center; gap:10px; z-index:50; }
+  .fixedbar .btn { background:#fff; color:#111827; }
+  .hidden { position:absolute; left:-9999px; top:-9999px; width:1px; height:1px; overflow:hidden; }
+  .print-field { border:1px solid #9ca3af; border-radius:6px; padding:10px 12px; font-size:11pt; line-height:1.6; white-space:pre-wrap; min-height:18px; }
+  @media (max-width: 768px) { .sheet { width:100%; min-height:auto; } .grid-2 { grid-template-columns:1fr; row-gap:6mm; } h1 { font-size:16pt; } input[type=text]{font-size:12pt;} #signature { height:40mm; } }
+</style>
+</head>
+<body>
+
+<div class="sheet" id="a4">
+  <div class="inner">
+    <h1>新式-行銷合作同意書</h1>
+
+    <div class="grid-2 row">
+      <div><label>甲方（合作人）</label><input id="f_name" type="text" placeholder="請輸入姓名"></div>
+      <div><label>身分證字號</label><input id="f_id" type="text" placeholder="請輸入身分證字號"></div>
+    </div>
+
+    <div class="grid-2 row">
+      <div><label>聯絡電話</label><input id="f_phone" type="text" placeholder="請輸入聯絡電話"></div>
+      <div><label>聯絡地址</label><input id="f_addr" type="text" placeholder="請輸入聯絡地址"></div>
+    </div>
+
+    <div class="row"><label>乙方</label><div>彭賢禮皮膚科診所／國際皮膚科診所</div></div>
+    <div class="row"><label>今日療程</label><input id="f_treatment" type="text" placeholder="請輸入今日療程"></div>
+
+    <div class="section muted">
+      <div style="font-weight:700">一、合作內容</div>
+      <ol>
+        <li>乙方同意提供甲方免費或優惠之微整形注射、雷射或其他醫學美容療程。</li>
+        <li>甲方同意授權乙方於公開發表或媒體相關刊物中使用甲方之治療前後照片及影片，使用範圍包含：平面新聞、電子媒體、醫學文獻、衛教教材及行銷文宣（含海報、DM、VCD、官網、社群平台），並於合理範圍內作相關用途。</li>
+      </ol>
+      <div style="font-weight:700; margin-top:3mm;">二、甲方義務</div>
+      <ol>
+        <li>甲方同意於療程後配合乙方之回診及影像拍攝，以追蹤治療效果，並授權乙方使用該影像於上述範圍。拍攝時間：術後 1 週、1 個月、2 個月、3 個月、6 個月、12 個月。</li>
+        <li>若甲方未依約配合回診拍攝或違反本同意書約定，甲方應補償乙方所提供療程之原價全額。</li>
+      </ol>
+      <p>本同意書自簽署日起生效，效力持續至合作影像使用需求終止之日止。甲方已充分閱讀並理解本同意書之內容，並同意遵守其規範。</p>
+    </div>
+
+    <div class="agree-line"><input id="f_agree" type="checkbox"><label for="f_agree">我已完整閱讀並同意上述合作內容與甲方義務。</label></div>
+
+    <div class="row sig-box">
+      <label style="margin:0 0 2mm;">蓋章（簽名）</label>
+      <canvas id="signature"></canvas>
+      <div style="margin-top:3mm;"><button class="btn secondary" id="btnClear">清除簽名</button></div>
+    </div>
+
+    <div class="row"><label>日期</label><input id="f_date" type="text" placeholder="自動帶入（yyyy年m月d日）"></div>
+    <div class="footer-note">匯出 PDF 後，欄位與簽名將固定為影像，無法再編輯。</div>
+  </div>
+</div>
+
+<div class="fixedbar">
+  <button class="btn secondary" id="btnValidate">檢查必填</button>
+  <button class="btn" id="btnExport">匯出整頁 PDF</button>
+</div>
+
+<div id="hiddenArea" class="hidden" aria-hidden="true"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+
+<script>
+(function(){
+  function zhDate(d){ return d.getFullYear() + "年" + (d.getMonth()+1) + "月" + d.getDate() + "日"; }
+  const dateInput = document.getElementById('f_date');
+  dateInput.value = zhDate(new Date());
+
+  // Signature pad
+  const canvas = document.getElementById('signature');
+  const pad = new window.SignaturePad(canvas, { minWidth:1, maxWidth:2 });
+  function resizeCanvas(){
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    const w = canvas.clientWidth, h = canvas.clientHeight || 240;
+    canvas.width = w * ratio; canvas.height = h * ratio;
+    canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+    canvas.getContext('2d').scale(ratio, ratio);
+    pad.clear();
+  }
+  window.addEventListener('resize', resizeCanvas);
+  setTimeout(resizeCanvas, 0);
+  document.getElementById('btnClear').addEventListener('click', ()=> pad.clear());
+
+  function validate(){
+    const req = [
+      ['f_name','請填寫「甲方（合作人）」'],
+      ['f_id','請填寫「身分證字號」'],
+      ['f_phone','請填寫「聯絡電話」'],
+      ['f_addr','請填寫「聯絡地址」'],
+      ['f_treatment','請填寫「今日療程」']
+    ];
+    for(const [id,msg] of req){
+      const el = document.getElementById(id);
+      if(!el.value.trim()){ alert(msg); el.focus(); return false; }
+    }
+    if(!document.getElementById('f_agree').checked){ alert('請勾選同意條款'); return false; }
+    if(pad.isEmpty()){ alert('請完成簽名'); return false; }
+    return true;
+  }
+  document.getElementById('btnValidate').addEventListener('click', validate);
+
+  function buildPrintClone(){
+    const clone = document.getElementById('a4').cloneNode(true);
+    // input -> div，避免裁切
+    clone.querySelectorAll('input[type="text"]').forEach(inp => {
+      const box = document.createElement('div');
+      box.className = 'print-field';
+      box.textContent = inp.value || '';
+      inp.parentNode.replaceChild(box, inp);
+    });
+    // 簽名 -> 圖
+    const sigCanvas = document.getElementById('signature');
+    const sigImg = new Image();
+    sigImg.src = sigCanvas.toDataURL('image/png');
+    clone.querySelector('#signature').replaceWith(sigImg);
+    return clone;
+  }
+
+  async function exportPDF(){
+    if(!validate()) return;
+    dateInput.value = zhDate(new Date());
+
+    const mount = document.getElementById('hiddenArea');
+    mount.innerHTML = '';
+    const printNode = buildPrintClone();
+    mount.appendChild(printNode);
+
+    const el = mount.querySelector('#a4');
+    const c = await window.html2canvas(el, { scale: 3.0, useCORS: true, scrollY: 0, letterRendering: true });
+
+    // 等比例塞進 A4：不拉伸，置中
+    const imgData = c.toDataURL('image/jpeg', 0.98);
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p','mm','a4');
+
+    const pageW = 210, pageH = 297;
+    const imgWpx = c.width, imgHpx = c.height;
+    const imgRatio = imgWpx / imgHpx; // w/h
+    const pageRatio = pageW / pageH;
+
+    let renderW, renderH;
+    if (imgRatio > pageRatio) {
+      // 圖片較寬：以寬為基準
+      renderW = pageW;
+      renderH = renderW / imgRatio;
+    } else {
+      // 圖片較高：以高為基準
+      renderH = pageH;
+      renderW = renderH * imgRatio;
+    }
+    const offsetX = (pageW - renderW) / 2;
+    const offsetY = (pageH - renderH) / 2;
+
+    doc.addImage(imgData, 'JPEG', offsetX, offsetY, renderW, renderH);
+
+    const name = (document.getElementById('f_name').value || '未填姓名').trim();
+    const t = new Date(), y=t.getFullYear(), m=String(t.getMonth()+1).padStart(2,'0'), d=String(t.getDate()).padStart(2,'0');
+    doc.save(`同意書_${y}-${m}-${d}_${name}.pdf`);
+  }
+
+  document.getElementById('btnExport').addEventListener('click', exportPDF);
+})(); 
+</script>
+</body>
+</html>
