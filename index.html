@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>新式-行銷合作同意書｜A4 v18 (單頁固定 + Mobile Safe)</title>
+<title>新式-行銷合作同意書｜A4 v20 (穩定單頁，不變白)</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <style>
   :root { --a4-w: 210mm; --a4-h: 297mm; --pad: 14mm; }
@@ -32,7 +32,8 @@
   .hidden { position:absolute; left:-9999px; top:-9999px; width:1px; height:1px; overflow:hidden; }
   .print-field { border:1px solid #9ca3af; border-radius:6px; padding:10px 12px; font-size:11pt; line-height:1.6; white-space:pre-wrap; min-height:18px; }
   @media (max-width: 768px) { .sheet { width:100%; min-height:auto; } .grid-2 { grid-template-columns:1fr; row-gap:6mm; } h1 { font-size:16pt; } input[type=text]{font-size:12pt;} #signature { height:40mm; } }
-  .lock-scroll { overflow:hidden; touch-action:none; overscroll-behavior:contain; }
+  /* 強鎖滾動用 */
+  .signing-lock { position: fixed; width: 100%; }
 </style>
 </head>
 <body>
@@ -113,9 +114,32 @@
   setTimeout(resizeCanvas, 0);
   document.getElementById('btnClear').addEventListener('click', ()=> pad.clear());
 
-  // 防滑動簽名
-  let drawing = false;
-  const lockScroll = (lock)=>{ document.body.classList.toggle('lock-scroll', !!lock); };
+  // 強鎖滾動（桌機 & iPad）
+  let drawing = false, scrollY = 0, prevHtmlOverflow = '', prevBodyOverflow = '', prevBodyPos = '', prevBodyTop = '';
+  function lockScroll(hard=true){
+    if (hard) {
+      scrollY = window.scrollY || window.pageYOffset || 0;
+      prevHtmlOverflow = document.documentElement.style.overflow;
+      prevBodyOverflow = document.body.style.overflow;
+      prevBodyPos = document.body.style.position;
+      prevBodyTop = document.body.style.top;
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      window.addEventListener('touchmove', preventer, {passive:false});
+      window.addEventListener('wheel', preventer, {passive:false});
+    } else {
+      document.documentElement.style.overflow = prevHtmlOverflow || '';
+      document.body.style.overflow = prevBodyOverflow || '';
+      document.body.style.position = prevBodyPos || '';
+      document.body.style.top = prevBodyTop || '';
+      window.removeEventListener('touchmove', preventer);
+      window.removeEventListener('wheel', preventer);
+      window.scrollTo(0, scrollY);
+    }
+  }
+  function preventer(e){ e.preventDefault(); }
   const start = (e)=>{ drawing = true; lockScroll(true); e.preventDefault(); };
   const move  = (e)=>{ if (drawing) e.preventDefault(); };
   const end   = (e)=>{ drawing = false; lockScroll(false); e.preventDefault(); };
@@ -159,25 +183,6 @@
     const sigImg = new Image();
     sigImg.src = sigCanvas.toDataURL('image/png');
     clone.querySelector('#signature').replaceWith(sigImg);
-
-    // ★ 單頁保證：若內容高度超過 A4 比例，對 clone 做等比例縮小
-    // 用實際像素判斷（避免行動裝置計算差異）
-    document.body.appendChild(clone); // 暫掛到頁面量尺寸
-    const r = clone.getBoundingClientRect();
-    const a4Ratio = 297/210;
-    const curRatio = r.height / r.width;
-    let scale = 1;
-    if (curRatio > a4Ratio) {
-      scale = (a4Ratio) / curRatio; // 壓到剛好不超出 A4 高度
-      clone.style.transform = `scale(${scale})`;
-      clone.style.transformOrigin = 'top left';
-      // 用縮放後的尺寸重新包一層，避免 html2canvas 仍抓原尺寸
-      const wrapper = document.createElement('div');
-      wrapper.style.width = r.width*scale + 'px';
-      wrapper.style.height = r.height*scale + 'px';
-      wrapper.appendChild(clone);
-      return wrapper;
-    }
     return clone;
   }
 
@@ -187,29 +192,36 @@
 
     const mount = document.getElementById('hiddenArea');
     mount.innerHTML = '';
-    const node = buildPrintClone();
-    mount.appendChild(node);
+    const printNode = buildPrintClone();
+    mount.appendChild(printNode);
 
-    const el = mount.children[0]; // wrapper or clone
+    const el = mount.querySelector('#a4');
 
-    // Mobile safe 渲染倍率與像素限制
-    const baseScale = isMobile() ? 1.6 : 2.4;
+    // 以元素原始尺寸渲染，不做 transform；動態控制 html2canvas 的 scale，避免超過像素上限
     const rect = el.getBoundingClientRect();
+    // 基準倍率：桌機 2.2、手機 1.6
+    const baseScale = isMobile() ? 1.6 : 2.2;
+    const maxPixels = isMobile() ? 12_000_000 : 24_000_000;
     const targetW = rect.width * baseScale;
     const targetH = rect.height * baseScale;
-    const maxPixels = isMobile() ? 10_000_000 : 20_000_000;
     const factor = Math.min(1, Math.sqrt(maxPixels / (targetW * targetH)));
     const scale = Math.max(1.2, baseScale * factor);
 
-    const c = await window.html2canvas(el, { scale, useCORS:true, scrollY:0, letterRendering:true, backgroundColor:'#ffffff' });
+    const canvasShot = await window.html2canvas(el, {
+      scale,
+      useCORS:true,
+      scrollY: 0,
+      letterRendering:true,
+      backgroundColor:'#ffffff'
+    });
 
-    // 單頁 A4（等比例置中，不拉伸）
-    const imgData = c.toDataURL('image/jpeg', 0.95);
+    const imgData = canvasShot.toDataURL('image/jpeg', 0.95);
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p','mm','a4');
 
+    // 等比例置中塞進 A4，單頁
     const pageW = 210, pageH = 297;
-    const imgWpx = c.width, imgHpx = c.height;
+    const imgWpx = canvasShot.width, imgHpx = canvasShot.height;
     const imgRatio = imgWpx / imgHpx, pageRatio = pageW / pageH;
     let renderW, renderH;
     if (imgRatio > pageRatio) { renderW = pageW; renderH = renderW / imgRatio; }
