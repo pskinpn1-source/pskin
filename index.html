@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>新式-行銷合作同意書｜A4 v16 (Mobile Safe + 防滑動簽名)</title>
+<title>新式-行銷合作同意書｜A4 v17 (Mobile-stable PDF)</title>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <style>
   :root { --a4-w: 210mm; --a4-h: 297mm; --pad: 14mm; }
@@ -23,7 +24,6 @@
   .agree-line { display:flex; align-items:flex-start; gap:4mm; font-size:11pt; margin: 4mm 0; }
   .agree-line input { transform: translateY(2px); }
   .sig-box { border:1px dashed #6b7280; border-radius:6px; padding:3mm; margin-top:6mm; }
-  /* 防止簽名時滑動：touch-action:none 仍不足，會在 JS 補上 preventDefault */
   #signature { width:100%; height:60mm; background:#fff; border-radius:4px; display:block; touch-action:none; }
   .footer-note { font-size:9.5pt; color:#6b7280; margin-top:2mm; }
   .btn { border:1px solid #cbd5e1; background:#111827; color:#fff; padding:9px 14px; font-size:12pt; border-radius:6px; cursor:pointer; }
@@ -33,7 +33,6 @@
   .hidden { position:absolute; left:-9999px; top:-9999px; width:1px; height:1px; overflow:hidden; }
   .print-field { border:1px solid #9ca3af; border-radius:6px; padding:10px 12px; font-size:11pt; line-height:1.6; white-space:pre-wrap; min-height:18px; }
   @media (max-width: 768px) { .sheet { width:100%; min-height:auto; } .grid-2 { grid-template-columns:1fr; row-gap:6mm; } h1 { font-size:16pt; } input[type=text]{font-size:12pt;} #signature { height:40mm; } }
-  /* 簽名中鎖住整頁滾動 */
   .lock-scroll { overflow:hidden; touch-action:none; overscroll-behavior:contain; }
 </style>
 </head>
@@ -60,7 +59,7 @@
       <div style="font-weight:700">一、合作內容</div>
       <ol>
         <li>乙方同意提供甲方免費或優惠之微整形注射、雷射或其他醫學美容療程。</li>
-        <li>甲方同意授權乙方於公開發表或媒體相關刊物中使用甲方之治療前後照片及影片，使用範圍包含：平面新聞、電子媒體、醫學文獻、衛教教材及行銷文宣（含海報、DM、VCD、官網、社群平台），並於合理範圍內作相關用途。</li>
+        <li>甲方同意授權乙方於公開發表或媒體相關刊物中使用甲方之治療前後照片及影片，使用範圍包含：平面新聞、電子媒體、醫學文獻、衛教教材及行銷文宣（含海報、DM、官網、社群平台），並於合理範圍內作相關用途。</li>
       </ol>
       <div style="font-weight:700; margin-top:3mm;">二、甲方義務</div>
       <ol>
@@ -90,8 +89,8 @@
 
 <div id="hiddenArea" class="hidden" aria-hidden="true"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<!-- html2pdf (bundled: html2canvas + jsPDF) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 
 <script>
@@ -115,22 +114,16 @@
   setTimeout(resizeCanvas, 0);
   document.getElementById('btnClear').addEventListener('click', ()=> pad.clear());
 
-  // 🚫 防滑動：簽名時暫時鎖住整頁捲動
+  // 防滑動簽名
   let drawing = false;
-  const lockScroll = (lock)=>{
-    if (lock) { document.body.classList.add('lock-scroll'); }
-    else { document.body.classList.remove('lock-scroll'); }
-  };
+  const lockScroll = (lock)=>{ document.body.classList.toggle('lock-scroll', !!lock); };
   const start = (e)=>{ drawing = true; lockScroll(true); e.preventDefault(); };
   const move  = (e)=>{ if (drawing) e.preventDefault(); };
   const end   = (e)=>{ drawing = false; lockScroll(false); e.preventDefault(); };
-
   canvas.addEventListener('touchstart', start, {passive:false});
   canvas.addEventListener('touchmove',  move,  {passive:false});
   canvas.addEventListener('touchend',   end,   {passive:false});
   canvas.addEventListener('touchcancel',end,   {passive:false});
-  // 兼容一些 Android 裝置：在畫布上滑動也阻止滾動
-  canvas.addEventListener('gesturestart', start, {passive:false});
 
   function validate(){
     const req = [
@@ -149,8 +142,6 @@
     return true;
   }
   document.getElementById('btnValidate').addEventListener('click', validate);
-
-  function isMobile(){ return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent); }
 
   function buildPrintClone(){
     const clone = document.getElementById('a4').cloneNode(true);
@@ -179,42 +170,24 @@
 
     const el = mount.querySelector('#a4');
 
-    const baseScale = isMobile() ? 2.0 : 3.0;
-    const rect = el.getBoundingClientRect();
-    const targetW = rect.width * baseScale;
-    const targetH = rect.height * baseScale;
-    const maxPixels = isMobile() ? 12_000_000 : 20_000_000; // 限制總像素
-    const factor = Math.min(1, Math.sqrt(maxPixels / (targetW * targetH)));
-    const scale = Math.max(1.5, baseScale * factor); // 手機至少 1.5x
+    // 手機安全的參數（避免空白）：scale 1.2、quality 0.95、避免滾動位移
+    const opt = {
+      margin:       0,
+      filename:     (()=>{
+        const name = (document.getElementById('f_name').value || '未填姓名').trim();
+        const t = new Date(), y=t.getFullYear(), m=String(t.getMonth()+1).padStart(2,'0'), d=String(t.getDate()).padStart(2,'0');
+        return `同意書_${y}-${m}-${d}_${name}.pdf`;
+      })(),
+      image:        { type: 'jpeg', quality: 0.95 },
+      html2canvas:  { scale: 1.2, useCORS: true, scrollY: 0, backgroundColor: '#ffffff' },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'p' },
+      pagebreak:    { mode: ['avoid-all'] }
+    };
 
-    const c = await window.html2canvas(el, { scale, useCORS: true, scrollY: 0, letterRendering: true, backgroundColor: '#ffffff' });
-
-    const imgData = c.toDataURL('image/jpeg', 0.95);
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p','mm','a4');
-
-    // 等比例置中
-    const pageW = 210, pageH = 297;
-    const imgWpx = c.width, imgHpx = c.height;
-    const imgRatio = imgWpx / imgHpx, pageRatio = pageW / pageH;
-    let renderW, renderH;
-    if (imgRatio > pageRatio) { renderW = pageW; renderH = renderW / imgRatio; }
-    else { renderH = pageH; renderW = renderH * imgRatio; }
-    const offsetX = (pageW - renderW) / 2, offsetY = (pageH - renderH) / 2;
-    doc.addImage(imgData, 'JPEG', offsetX, offsetY, renderW, renderH);
-
-    const name = (document.getElementById('f_name').value || '未填姓名').trim();
-    const t = new Date(), y=t.getFullYear(), m=String(t.getMonth()+1).padStart(2,'0'), d=String(t.getDate()).padStart(2,'0');
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    if (isIOS) {
-      const blob = doc.output('blob');
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = `同意書_${y}-${m}-${d}_${name}.pdf`;
-      document.body.appendChild(a); a.click();
-      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 2000);
-    } else {
-      doc.save(`同意書_${y}-${m}-${d}_${name}.pdf`);
+    try {
+      await html2pdf().set(opt).from(el).save();
+    } catch (e) {
+      alert('匯出失敗，請再試一次或換用電腦：' + e.message);
     }
   }
 
